@@ -7,6 +7,7 @@ import javafx.stage.Stage;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -28,6 +29,8 @@ public class SimpleAdder extends Application {
     private Label outputLabel;
     private Label warningLabel;
     private Node outputRow;
+    private ComboBox<String> comboBox;
+    private Label operationLabel;
 
     public static void main(String[] args) {
         launch(args);
@@ -74,7 +77,10 @@ public class SimpleAdder extends Application {
     private Node createInputRow() {
         textFieldA = new TextField("0");
         textFieldB = new TextField("0");
-        var inputRow = new HBox(20, new Label("A:"), textFieldA, new Label("B:"), textFieldB);
+        comboBox = new ComboBox<>();
+        comboBox.getItems().addAll("+", "-", "x", "/");
+        comboBox.setValue("+");
+        var inputRow = new HBox(20, new Label("A:"), textFieldA, comboBox, new Label("B:"), textFieldB);
         inputRow.setAlignment(Pos.CENTER);
         return inputRow;
     }
@@ -90,8 +96,9 @@ public class SimpleAdder extends Application {
     private Node createOutputRow() {
         labelA = new Label("0");
         labelB = new Label("0");
+        operationLabel = new Label("+");
         outputLabel = new Label("0");
-        var outputRow = new HBox(10, labelA, new Label("+"), labelB, new Label("="), outputLabel);
+        var outputRow = new HBox(10, labelA, operationLabel, labelB, new Label("="), outputLabel);
         outputRow.setAlignment(Pos.CENTER);
         return outputRow;
     }
@@ -123,10 +130,36 @@ public class SimpleAdder extends Application {
         addButton.setOnAction(evt -> {
             String valueA = textFieldA.getText();
             String valueB = textFieldB.getText();
+            String operation = comboBox.getValue();
             labelA.setText(valueA);
             labelB.setText(valueB);
+            operationLabel.setText(operation);
             try {
-                outputLabel.setText(String.valueOf(Integer.parseInt(valueA) + Integer.parseInt(valueB)));
+                int a = Integer.parseInt(valueA);
+                int b = Integer.parseInt(valueB);
+                int result = 0;
+
+                switch (operation) {
+                    case "+":
+                        result = a + b;
+                        break;
+                    case "-":
+                        result = a - b;
+                        break;
+                    case "x":
+                        result = a * b;
+                        break;
+                    case "/":
+                        if (b == 0) {
+                            outputRow.setVisible(false);
+                            outputLabel.setText("Division by zero");
+                            return;
+                        }
+                        result = a / b;
+                        break;
+                }
+
+                outputLabel.setText(String.valueOf(result));
                 showOutput();
             } catch (NumberFormatException e) {
                 showWarning();
