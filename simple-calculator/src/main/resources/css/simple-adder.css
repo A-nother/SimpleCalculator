@@ -2,7 +2,7 @@
   text-color: #424242;
   bg-color: #F5F5F5;
   banner-text-color: #FFFFFF;
-  banner-bg-color: #007AFF;
+  banner-bg-color: #00CC00;
 
   -fx-text-fill: text-color;
   -fx-background-color: bg-color;
@@ -23,5 +23,10 @@
 
 .warning {
   -fx-text-fill: #FF5100;
+  -fx-font-weight: bold;
+}
+
+.output-label {
+  -fx-text-fill: #0070FF;
   -fx-font-weight: bold;
 }

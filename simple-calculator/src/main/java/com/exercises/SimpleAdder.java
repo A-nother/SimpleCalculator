@@ -27,7 +27,8 @@ public class SimpleAdder extends Application {
     private Label labelA;
     private Label labelB;
     private Label outputLabel;
-    private Label warningLabel;
+    private Label warningLabel1;
+    private Label warningLabel2;
     private Node outputRow;
     private ComboBox<String> comboBox;
     private Label operationLabel;
@@ -87,9 +88,11 @@ public class SimpleAdder extends Application {
 
     private Node createOutputPane() {
         outputRow = createOutputRow();
-        var warningLabel = createWarningLabel();
-        warningLabel.setVisible(false);
-        var outputPane = new StackPane(outputRow, warningLabel);
+        var warningLabel1 = createWarningLabel();
+        warningLabel1.setVisible(false);
+        var warningLabel2 = createWaringLabelDivibyZero();
+        warningLabel2.setVisible(false);
+        var outputPane = new StackPane(outputRow, warningLabel1, warningLabel2);
         return outputPane;
     }
 
@@ -98,15 +101,22 @@ public class SimpleAdder extends Application {
         labelB = new Label("0");
         operationLabel = new Label("+");
         outputLabel = new Label("0");
+        outputLabel.getStyleClass().add("output-label");
         var outputRow = new HBox(10, labelA, operationLabel, labelB, new Label("="), outputLabel);
         outputRow.setAlignment(Pos.CENTER);
         return outputRow;
     }
 
     private Node createWarningLabel() {
-        warningLabel = new Label("Invalid input format.");
-        warningLabel.getStyleClass().add("warning");
-        return warningLabel;
+        warningLabel1 = new Label("Invalid input format.");
+        warningLabel1.getStyleClass().add("warning");
+        return warningLabel1;
+    }
+
+    private Node createWaringLabelDivibyZero() {
+        warningLabel2 = new Label("Division by zero");
+        warningLabel2.getStyleClass().add("warning");
+        return warningLabel2;
     }
 
     private Node createButtonRow() {
@@ -119,8 +129,8 @@ public class SimpleAdder extends Application {
     private Node createRandomizeButton() {
         var randomizeButton = new Button("Randomize");
         randomizeButton.setOnAction(evt -> {
-            textFieldA.setText(String.valueOf(random.nextInt(-1000, 1000)));
-            textFieldB.setText(String.valueOf(random.nextInt(-1000, 1000)));
+            textFieldA.setText(String.valueOf(rangeRandomInt(-1000, 1000)));
+            textFieldB.setText(String.valueOf(rangeRandomInt(-1000, 1000)));
         });
         return randomizeButton;
     }
@@ -150,11 +160,6 @@ public class SimpleAdder extends Application {
                         result = a * b;
                         break;
                     case "/":
-                        if (b == 0) {
-                            outputRow.setVisible(false);
-                            outputLabel.setText("Division by zero");
-                            return;
-                        }
                         result = a / b;
                         break;
                 }
@@ -163,6 +168,8 @@ public class SimpleAdder extends Application {
                 showOutput();
             } catch (NumberFormatException e) {
                 showWarning();
+            } catch (ArithmeticException e) {
+                showWarningDivibyZero();
             }
         });
         return addButton;
@@ -170,11 +177,23 @@ public class SimpleAdder extends Application {
 
     private void showOutput() {
         outputRow.setVisible(true);
-        warningLabel.setVisible(false);
+        warningLabel1.setVisible(false);
+        warningLabel2.setVisible(false);
     }
 
     private void showWarning() {
         outputRow.setVisible(false);
-        warningLabel.setVisible(true);
+        warningLabel2.setVisible(false);
+        warningLabel1.setVisible(true);
+    }
+
+    private void showWarningDivibyZero() {
+        outputRow.setVisible(false);
+        warningLabel1.setVisible(false);
+        warningLabel2.setVisible(true);
+    }
+
+    private int rangeRandomInt(int start, int end) {
+        return random.nextInt(start, end-1);
     }
 }
